@@ -213,7 +213,7 @@ Sau khi chương trình nhày vào hàm `hacked`,lúc `push rbp` thì do stack k
 
 ## Basic Steganography
 
-<write here>
+
 ![image](https://github.com/FPTU-Ethical-Hackers-Club/CTF-Writeup/assets/120787381/73a54b18-93c7-4409-9c3c-e7e8b8cd74ee)
 
 Ở bài này, mình thấy rằng challenge liên quan đến basic steganography tức là kỹ thuật giấu tin cơ bản. Và mình được cho một file ảnh
