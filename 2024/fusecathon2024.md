@@ -214,6 +214,19 @@ Sau khi chương trình nhày vào hàm `hacked`,lúc `push rbp` thì do stack k
 ## Basic Steganography
 
 <write here>
+![image](https://github.com/FPTU-Ethical-Hackers-Club/CTF-Writeup/assets/120787381/73a54b18-93c7-4409-9c3c-e7e8b8cd74ee)
+
+Ở bài này, mình thấy rằng challenge liên quan đến basic steganography tức là kỹ thuật giấu tin cơ bản. Và mình được cho một file ảnh
+
+![image](https://github.com/FPTU-Ethical-Hackers-Club/CTF-Writeup/assets/120787381/9893d9ed-e4a4-4bc6-b6c6-f35b8ad155b5)
+
+Mình thấy rằng đây là file JPG. Sau đó mình thử dùng strings và grep thử flag.
+
+![image](https://github.com/FPTU-Ethical-Hackers-Club/CTF-Writeup/assets/120787381/26043721-90a5-49a4-9a64-7114f1806ef7)
+
+Bất ngờ là nó đúng như những gì mình nghĩ về 1 challenge basic.
+
+**Flag: FUSec{70VictoryDienBienPhu}**
 
 ---
 
