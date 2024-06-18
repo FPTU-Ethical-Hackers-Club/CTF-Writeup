@@ -55,7 +55,150 @@ This is the write-up for the FUSeCathon 2024.
 
 ## CRYPTO
 
-<write here>
+### Flag format: 
+`FUSec{...}`
+
+### Đề bài
+Hãy phân tích chương trình mã hóa sau để giải mã chuỗi sau: ['159.96.34.204', '136.182.188.58', '155.20.31.30', '12.234.113.15', '153.170.118.69', '189.152.240.17', '180.27.111.161', '87.205.101.118', '45.1.136.2', '122.3.3.3']
+
+```
+import socket
+import struct
+
+def cipher(k, d):
+    S = list(range(256))
+    j = 0
+    o = []
+    for i in range(256):
+        j = (j + S[i] + k[i % len(k)]) % 256
+        S[i], S[j] = S[j], S[i]
+    i = j = 0
+    for c in d:
+        i = (i + 1) % 256
+        j = (j + S[i]) % 256
+        S[i], S[j] = S[j], S[i]
+        o.append(c ^ S[(S[i] + S[j]) % 256])
+    return bytearray(o)
+
+def encr(pt, k):
+    ed = cipher(k, pt.encode('utf-8'))
+    padding_length = (4 - len(ed) % 4) % 4
+    ed += bytes([padding_length] * padding_length)
+    ipa = d2ip(ed)
+    return ipa
+
+def d2ip(d):
+    ipa = []
+    for i in range(0, len(d), 4):
+        pd = d[i:i+4]
+        if len(pd) < 4:
+            pd += b'\x00' * (4 - len(pd))
+        ip = socket.inet_ntoa(struct.pack('!I', int.from_bytes(pd, byteorder='big')))
+        ipa.append(ip)
+    return ipa
+
+def main():
+    key = bytearray('supersecretkey', 'utf-8')
+    plaintext = "hiyou"
+    ipa = encr(plaintext, key)
+    print("IPv4 Encoded Data:", ipa)
+
+if __name__ == "__main__":
+    main()
+```
+
+### Phân tích
+Ở đây, ta sẽ để ý hàm để mã hóa:
+```
+def encr(pt, k):
+    ed = cipher(k, pt.encode('utf-8'))
+    padding_length = (4 - len(ed) % 4) % 4
+    ed += bytes([padding_length] * padding_length)
+    ipa = d2ip(ed)
+    return ipa
+```
+Hàm `encr` sẽ gọi hàm `cipher` để mã hóa `pt`. Kết quả sau đó sẽ được thêm padding sao cho độ dài của `ed` là bội số của 4. Kết quả sau đó sẽ được truyền vào hàm `d2ip`:
+```
+def d2ip(d):
+    ipa = []
+    for i in range(0, len(d), 4):
+        pd = d[i:i+4]
+        if len(pd) < 4:
+            pd += b'\x00' * (4 - len(pd))
+        ip = socket.inet_ntoa(struct.pack('!I', int.from_bytes(pd, byteorder='big')))
+        ipa.append(ip)
+    return ipa
+```
+Hàm này sẽ chia ciphertext của chúng ta thành từng block 4 bytes, nếu không đủ 4 bytes sẽ thêm bytes \x00. Sau đó, mỗi block này sẽ được chuyển thành một địa chỉ IP sử dụng `socket.inet_ntoa(struct.pack('!I', int.from_bytes(pd, byteorder='big')))`. Kết quả sẽ trả về 1 list các IP. Hàm này có thể dễ dàng được reverse:
+```
+def ip2d(ipa):
+    d = bytearray()
+    for ip in ipa:
+        d += struct.unpack('!I', socket.inet_aton(ip))[0].to_bytes(4, byteorder='big')
+    return d
+```
+Giờ ta phải tìm cách để decrypt. Để làm được, ta phải nhìn vào hàm `cipher`:
+```
+def cipher(k, d):
+    S = list(range(256))
+    j = 0
+    o = []
+    for i in range(256):
+        j = (j + S[i] + k[i % len(k)]) % 256
+        S[i], S[j] = S[j], S[i]
+    i = j = 0
+    for c in d:
+        i = (i + 1) % 256
+        j = (j + S[i]) % 256
+        S[i], S[j] = S[j], S[i]
+        o.append(c ^ S[(S[i] + S[j]) % 256])
+    return bytearray(o)
+```
+Hàm này sẽ nhận vào một key là `k` và plaintext là `d`. Có khá nhiều các phép tính có thể gây rối, tuy nhiên, thật ra chúng ta chỉ cần quan tâm vào chỗ liên quan tới plaintext:
+```
+o.append(c ^ S[(S[i] + S[j]) % 256])
+```
+### Lời giải
+```
+import socket
+import struct
+
+def uncipher(k, d):
+    S = list(range(256))
+    j = 0
+    o = []
+    for i in range(256):
+        j = (j + S[i] + k[i % len(k)]) % 256
+        S[i], S[j] = S[j], S[i]
+    i = j = 0
+    for c in d:
+        i = (i + 1) % 256
+        j = (j + S[i]) % 256
+        S[i], S[j] = S[j], S[i]
+        o.append(c ^ S[(S[i] + S[j]) % 256])
+    return bytes(o)
+
+def decr(ct, k):
+    ed = ip2d(ct)
+    padding_length = ed[-1]
+    ed = ed[:-padding_length]
+    pt = uncipher(k, ed)
+    return pt
+    
+def ip2d(ipa):
+    d = b''
+    for ip in ipa:
+        d += struct.unpack('!I', socket.inet_aton(ip))[0].to_bytes(4, byteorder='big')
+    return d
+
+ipa = ['159.96.34.204', '136.182.188.58', '155.20.31.30', '12.234.113.15', '153.170.118.69', '189.152.240.17', '180.27.111.161', '87.205.101.118', '45.1.136.2', '122.3.3.3']
+key = b'supersecretkey'
+
+flag = decr(ipa, key)
+print("Flag:", flag.decode())
+```
+### Flag
+`FUSec{howdyiamnowinyourhanddecrypted}`
 
 ---
 
