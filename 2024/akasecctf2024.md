@@ -602,3 +602,94 @@ Giờ mình sẽ thực hiện lại các bước để giải bài này:
 4. ![image](https://hackmd.io/_uploads/S1hQlqBrA.png)
 
 
+# OSINT
+
+## Th3Hun7 1
+
+Flag: AKASEC{Wh4T_a_PfP_:3}
+
+![image](https://github.com/FPTU-Ethical-Hackers-Club/CTF-Writeup/assets/120787381/f11b1e76-740d-4124-bd31-95a30d0362dd)
+
+Ở challenge này, họ yêu cầu ta phải đi tìm Former member của team akasec. Hint ở đây là đáp án không nhất thiết phải ở ctftime.org.
+
+Bước đầu tiên, mình vào trang ctftime.org để xem team này có gì không ?
+
+![image](https://github.com/FPTU-Ethical-Hackers-Club/CTF-Writeup/assets/120787381/a54183d2-6a13-4acf-989b-1c7458bb8fd2)
+
+Mình thấy 3 link là website của ctf, website chính thức và twitter. Lúc này mình vào website chính thức
+
+![image](https://github.com/FPTU-Ethical-Hackers-Club/CTF-Writeup/assets/120787381/e72a2bf5-dee3-4c6b-a33f-f7399babb394)
+
+Mình thấy nó khá bình thường. Vì vậy nên mình vào twitter của team này
+
+![image](https://github.com/FPTU-Ethical-Hackers-Club/CTF-Writeup/assets/120787381/b9242abe-1008-4f2b-8f96-10b9e37e15ec)
+
+Lúc này, mình biết được rằng đây là website mới deploy. Mình đoán là ở trong website này sẽ có gì đó mà tác giải cài cắm, vì thế nên mình xem thử source code của trang web này.
+
+Ở đây mình thấy 1 link twitter, 1 link github và 
+
+``` <img alt="l3ar4nda5" loading="lazy" decoding="async" data-nimg="fill" class="object-cover" style="position:absolute;height:100%;width:100%;left:0;top:0;right:0;bottom:0;color:transparent" sizes="100vw" src="/_next/static/media/l3rnds.bbe6448d.jpeg"> ```
+
+Ở đây, rõ ràng đây là phần sus nhất. Vì thế nên mình thử xem src ảnh kia có gì
+
+![image](https://github.com/FPTU-Ethical-Hackers-Club/CTF-Writeup/assets/120787381/e2ee30db-b570-40e5-b6dc-b3e256d855ff)
+
+## Th3Hun7 2
+
+![image](https://github.com/FPTU-Ethical-Hackers-Club/CTF-Writeup/assets/120787381/092484de-086f-44c6-947a-0c4a8d7bd9f5)
+
+Tiếp nối phần 1, dựa theo những dự kiện mình đã có ở phần 2 là github. Mình quyết định vào xem thử github
+
+![image](https://github.com/FPTU-Ethical-Hackers-Club/CTF-Writeup/assets/120787381/edaa3e3e-5447-4432-a1ba-ccc3bbabecf4)
+
+Ở kia có một đoạn morse code
+
+![image](https://github.com/FPTU-Ethical-Hackers-Club/CTF-Writeup/assets/120787381/677afc98-62ef-4b51-b66b-abaf8793f21c)
+
+Vậy là, có thể đáp án sẽ nằm ở trong bài này. Mình bắt đầu với các repos để xem có gì để tìm hiểu không, lúc này mình phát hiện ra các commit ở đây có vẻ khá là sus và ở repo minishell, khi vào phần commit, mình thấy nó đã rất rõ ràng
+
+![image](https://github.com/FPTU-Ethical-Hackers-Club/CTF-Writeup/assets/120787381/fc285580-7ccb-411e-9a8f-19e1dcd65bc0)
+
+Vậy nên mình đi đến trang cuối và ghép các mảnh flag lại với nhau:
+
+**Flag: AKASEC{H1dd3n_fl4g_1n_C0mM!t5_1snT_Th4t_HARD_hh}**
+
+## Th3Hun7 3
+
+Sau khi đã làm ra bài 2, thì mình phát hiện rằng ở github của người dùng này có tham gia tổ chức tên là L33t-C0ders
+
+![image](https://github.com/FPTU-Ethical-Hackers-Club/CTF-Writeup/assets/120787381/19d2f2ed-d162-42fa-a8b6-f55abc93d4e9)
+
+Ở đây mình đã thử tìm tên của từng người, và sau khi tìm tên của fib0na7ch1, mình thấy người này có reddit và 1 comment
+
+![image](https://github.com/FPTU-Ethical-Hackers-Club/CTF-Writeup/assets/120787381/7b6fa7c8-7944-4bc3-a55c-e505a78ed723)
+
+Ở đây, user này có comment là discord nitro và gắn kèm link, nhìn rất sus
+
+![image](https://github.com/FPTU-Ethical-Hackers-Club/CTF-Writeup/assets/120787381/327dc4c5-93d2-4d43-91c5-f18f6921c88c)
+
+Sau đó mình bấm vào thì thấy rằng có 1 bức ảnh hiện ra
+
+![image](https://github.com/FPTU-Ethical-Hackers-Club/CTF-Writeup/assets/120787381/31ba4016-fc76-41f4-8b9b-59007ea63898)
+
+Ở đây mình có 1 tài khoản liên minh, 1 tài khoản riot và 1 tài khoản reddit
+
+Sau khi tìm thử tài khoản lol trên op.gg, mình nhận thấy rằng không có điểm gì đáng tìm cả.
+
+![image](https://github.com/FPTU-Ethical-Hackers-Club/CTF-Writeup/assets/120787381/40e2a6e5-43cc-414f-b90b-fc7cc489d73e)
+
+Tiếp đó mình sang tài khoản Valorant vì riot ID ở đây bao gồm một số tựa game như vậy và chỉ có 2 game mới có thể track được kiểu này. Mình thấy được rằng tài khoản này gần đây có chơi game. Nhưng cũng không có gì đặc biệt cả. Thế nên mình xem thử người chơi cùng cậu ta là K4l0ri3z#1337
+
+![image](https://github.com/FPTU-Ethical-Hackers-Club/CTF-Writeup/assets/120787381/ee3baea3-c1c6-4210-baad-8377864ae8a3)
+
+Lúc này mình thấy người chơi này có 1 tài khoản twitch
+
+![image](https://github.com/FPTU-Ethical-Hackers-Club/CTF-Writeup/assets/120787381/6399e4b4-296f-46f6-ba4f-eae6742ca8b6)
+
+Mình bấm vào và phát hiện có 1 game đã stream. Lúc này thì mình ngồi xem từng đoạn một để xem có gì không ?
+
+Sau khi xem thì mình phát hiện ra flag được bắn lên tường và ở trên chat
+
+**Flag: AKASEC{5tR3Am_wA5_FuUuuUn}**
+
+
