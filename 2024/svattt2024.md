@@ -57,3 +57,54 @@ Ye và nó đúng
 
 FLAG: ASCIS{Gh4st1n_Th3_R2M}
 
+# Web Exploitation
+---
+
+## SQL
+<!Write here>
+---
+
+## Path Traversal
+<!Write here>
+---
+
+## DigitalGadget
+<!Write here>
+---
+
+# Cryptography
+---
+
+## Crypto 01
+<!Write here>
+---
+
+## Close
+<!Write here>
+---
+
+## Fishy
+<!Write here>
+---
+
+## Chall 1
+<!Write here>
+---
+
+# Reverse Engineering
+---
+
+## RE
+<!Write here>
+---
+
+## Skidw4re
+<!Write here>
+---
+
+# MISC
+---
+## Tetris
+
+<!Write here>
+---
